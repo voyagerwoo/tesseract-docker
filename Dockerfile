@@ -5,19 +5,10 @@ LABEL "name"="ubuntu_tesseract"
 
 RUN apt-get update
 
-# 기본 툴 설치
+# install utils
 RUN apt-get install -y curl && apt-get install -y wget && apt-get install -y git
 
-# Node js 설치
-ENV NODE_VERSION 6.10.3
-ENV NODE_DIR /opt/nodejs
-
-RUN mkdir ${NODE_DIR} && \
-	curl -L https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz | tar xvzf - -C ${NODE_DIR} --strip-components=1
-
-ENV PATH $PATH:${NODE_DIR}/bin
-
-# Tesseract 의존 라이브러리 설치
+# install library that Tesseract is dependent on 
 RUN apt-get install -y g++ && \
     apt-get install -y autoconf automake libtool && \
     apt-get install -y autoconf-archive && \
@@ -30,14 +21,14 @@ RUN apt-get install -y g++ && \
     apt-get install -y libpango1.0-dev && \
     apt-get install -y libcairo2-dev
 
-# leptonica 1.74 버전 설치 및 빌드
+# download and install leptonica 1.74
 WORKDIR /
 RUN wget http://www.leptonica.org/source/leptonica-1.74.1.tar.gz && tar xvzf leptonica-1.74.1.tar.gz
 WORKDIR leptonica-1.74.1
 RUN ./configure; make; make install
 WORKDIR /
 
-# Tesseract 다운로드 및 설치
+# download and install Tesseract
 RUN git clone https://github.com/tesseract-ocr/tesseract.git
 WORKDIR tesseract
 RUN ./autogen.sh && ./configure && \
